@@ -39,6 +39,7 @@ urlpatterns = [
     # path('book/(?P<book_id>\d+)', book, name="book"),
     # path('', index, name="index" ), 
     # path('', include(router.urls)),
-    path('accounts/login/', auth_views.LoginView.as_view(template_name="login.html"), name="login"),
+    #path('accounts/login/', auth_views.LoginView.as_view(template_name="login.html"), name="login"),
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+     path('', include('lms_api.urls')),
 ]

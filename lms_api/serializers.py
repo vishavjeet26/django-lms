@@ -1,55 +1,69 @@
-from lms_api.models import User,Category,Publisher,Author,Book
 from rest_framework import serializers
-from django.contrib.auth.hashers import make_password
+from library.models import Author, Books, Student, Librarian, Publisher, Issue
+from django.contrib.auth.models import User
+from rest_framework import permissions
+
+
+class AuthorSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    firstname = serializers.CharField(required=False, allow_blank=False, max_length=100)
+    lastname = serializers.CharField(required=False, allow_blank=False, max_length=100)
+    dob = serializers.DateField()
+    fullname = serializers.CharField(required=False, allow_blank=False, max_length=200)
+
+    def create(self, validated_data):
+        """
+        Create and return a new `Author` instance, given the validated data.
+        """
+        return Author.objects.create(**validated_data)
+
+    def update(self, instance, validated_data):
+        """
+        Update and return an existing `Author` instance, given the validated data.
+        """
+        instance.firstname = validated_data.get('firstname', instance.firstname)
+        instance.lastname = validated_data.get('lastname', instance.lastname)
+        instance.dob = validated_data.get('dob', instance.dob)
+        instance.fullname = validated_data.get('fullname', instance.fullname)
+        instance.save()
+        return instance
+
+class PublisherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Publisher
+        fields = ['id', 'name', 'country', 'city']
+
+class PublisherSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Publisher
+        fields = ['id', 'name', 'country', 'city']
+
+class IssueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Issue
+        fields = ['id', 'user', 'book'] 
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['id', 'user', 'enrollment_no',
+        'first_name','last_name','gender','department','semester','fullname']
+
+class LibrarianSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Librarian
+        fields = ['id', 'user','first_name','last_name','librarian_id','fullname']
+
+class BookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Books
+        fields = ['book_id','title','author','isbn','publisher','due_date',
+        'issue_date','return_date','request_issue','issue_status','fine','email']
 
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ('first_name', 'last_name', 'username', 'email', 'password', 'phone_no', 'gender')
-        
-        extra_kwargs = {'password': {'write_only': True}}
-
-    def create(self, validated_data):
-        print("Create")
-        password = validated_data.pop('password', None)
-        instance = self.Meta.model(**validated_data)
-        if password is not None:
-            instance.set_password(password)
-        instance.save()
-        return instance
-
-    def update(self, instance, validated_data):
-        print("Update")
-        for attr, value in validated_data.items():
-            if attr == 'password':
-                instance.set_password(value)
-            else:
-                setattr(instance, attr, value)
-        instance.save()
-        return instance
+        fields = ['id', 'username', 'email','first_name','last_name']
 
 
-class CategorySerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Category
-        fields = ('name',)
-
-class PublisherSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Publisher
-        fields = ('name',)
-
-class AuthorSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Author
-        fields = ('name',)
-
-class BookSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Book
-        fields = ('title','desc','categories','publisher','author',)
-
-    categories = CategorySerializer(many=True)
-    publisher = PublisherSerializer()
-    author = AuthorSerializer()
