@@ -17,29 +17,13 @@ from django.contrib import admin
 from django.urls import path, include
 from signup_crud.views import home_view
 
-from rest_framework import routers
-#from lms_api.views import index,category,book
-#from lms_api import views
-from django.contrib.auth import views as auth_views
-
-# router = routers.DefaultRouter()
-# router.register(r'users', views.UserViewSet)
-# router.register(r'categories', views.CategoryViewSet)
-# router.register(r'publishers', views.PublisherViewSet)
-# router.register(r'authors', views.AuthorViewSet)
-# router.register(r'books', views.BookViewSet)
-
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('singup_crud/', include('signup_crud.urls')),
     path('', home_view),
     path('library/', include('library.urls')),
-   # Resfull API for LMS
-    # path('category/(?P<category_id>\d+)', category, name="category"),
-    # path('book/(?P<book_id>\d+)', book, name="book"),
-    # path('', index, name="index" ), 
-    # path('', include(router.urls)),
-    #path('accounts/login/', auth_views.LoginView.as_view(template_name="login.html"), name="login"),
-    path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-     path('', include('lms_api.urls')),
+    # Resfull API for LMS
+    path('api-auth/', include('rest_framework.urls')),
+    path('', include('lms_api.urls')),
 ]
+
