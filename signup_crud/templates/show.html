@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <div class="container">    
+     <br />
+     <h3 align="center">User Details Page</h3>
+     <br />
+     
+<div class="jumbotron text-center">
+ <div align="right">
+  <a href="/singup_crud/" class="btn btn-success">Back</a>
+ </div>
+ <br />
+ <h3>UserId - {{ user.id }} </h3>
+ <h3>Username - {{ user.username }}</h3>
+ <h3>First Name - {{ user.first_name }}</h3>
+ <h3>Last Name - {{ user.last_name }}</h3>
+ <h3>Email - {{ user.email }}</h3>
+ <h3>Is Staff - {{ user.is_staff|yesno:"Yes,No" }}</h3>
+ <h3>Is Active - {{ user.is_active|yesno:"Yes,No" }}</h3>
+ <h3>Date Joined - {{ user.date_joined }}</h3>
+</div>
+    </div>
+{% endblock %}

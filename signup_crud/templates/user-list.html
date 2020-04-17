@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container text-center">
+    <h1>Signup For CRUD Operation</h1>      
+  </div>
+</div>
+  
+<div class="container-fluid bg-12 text-center"> 
+<div class="row">
+  <div class="col-sm-9"></div>
+  <div class="col-sm-3">
+    <div align="right">
+    <a href="/singup_crud/create" class="btn btn-success btn-sm">+New User</a>
+</div>
+  </div>
+</div> 
+<br>  
+  <div class="row">
+    <div class="col-sm-12"> 
+     <table class="table table-bordered table-striped">
+ <tr>
+  <th width="5%">S.No</th>
+  <th width="10%">Username</th>
+  <th width="15%">Email</th>
+  <th width="15%">Full Name</th>
+  <th width="10%">Is Staff</th>
+  <th width="10%">Is Active</th>
+  <th width="15%">Date Joined</th>
+  <th width="20%">Action</th>
+ </tr>
+ {% for user in users %}
+   <tr>
+    <td>{{ forloop.counter }}</td>    
+    <td>{{ user.username }}</td>  
+    <td>{{ user.email }}</td>
+    <td>{{ user.first_name }}</td>  
+    <td>{{ user.is_staff|yesno:"Yes,No" }}</td>
+    <td>{{ user.is_active|yesno:"Yes,No" }}</td>
+    <td>{{ user.date_joined }}</td>
+   <td>
+    <form action="/singup_crud/delete/{{ user.id }}" method="post">
+      {% csrf_token %}
+                    <a href="/singup_crud/show/{{ user.id }}" class="btn btn-primary">Show</a>
+                    <a href="/singup_crud/edit/{{ user.id }}" class="btn btn-warning">Edit</a><button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+   </td>
+  </tr>
+  {% endfor %}  
+ </table>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
+

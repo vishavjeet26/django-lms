@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container text-center">
+    <h1>Login Page</h1>      
+    {% if is_invalid %}
+<div class="alert alert-danger alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>Invalid!</strong> Username or password is incorrect
+</div>
+{% endif %}
+  </div>
+</div>
+  
+<div class="container-fluid bg-12 text-center">    
+  <div class="row">
+    <div class="col-sm-12"> 
+      <form method="post" action="/singup_crud/login/" >
+       {% csrf_token %} 
+       {{ form }}
+       <br><br>
+       <div class="form-group text-center">
+        <input type="submit" name="add" class="btn btn-primary input-lg" value="login" />
+        </div>
+       </form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}

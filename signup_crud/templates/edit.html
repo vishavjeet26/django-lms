@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="jumbotron">
+  <div class="container text-center">
+    <h1>User Edit Page</h1>      
+{% if is_updated %}
+<div class="alert alert-success alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>Success!</strong> Record Updated successfully</a>
+</div>
+{% endif %}
+{% if error_msg %}
+<div class="alert alert-danger alert-dismissible">
+      <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+  <strong>Error!</strong> {{ error_msg }}
+</div>
+{% endif %}
+  </div>
+</div>
+  
+<div class="container-fluid bg-12 text-center">
+<div class="row">
+  <div class="col-sm-9"></div>
+  <div class="col-sm-3">
+    <div align="right">
+                <a href="/singup_crud/" class="btn btn-success">Back</a>
+      </div>
+  </div>
+</div> 
+<br>  
+  <div class="row">
+    <div class="col-sm-12"> 
+       <form method="POST"  action="/singup_crud/edit/{{user.id}}">  
+        {% csrf_token %} 
+   <div>     
+  <label class="col-md-4 text-right">Username:</label>
+  <div class="col-md-8">
+    <input type="hidden" required class="form-control input-lg" value="{{ user.id }}" name="user_id">
+    <input type="text" required class="form-control input-lg" value="{{ user.username }}" name="username">
+  </div>
+ </div>
+ <br />
+ <br />
+ <br />
+
+    <div>     
+  <label class="col-md-4 text-right">Email:</label>
+  <div class="col-md-8">
+    <input type="email" required class="form-control input-lg" value="{{ user.email }}" name="email">
+  </div>
+ </div>
+ <br />
+ <br />
+ <br />
+
+    <div>     
+  <label class="col-md-4 text-right">First Name:</label>
+  <div class="col-md-8">
+    <input type="text" required value="{{ user.first_name }}" class="form-control input-lg" name="first_name">
+  </div>
+ </div>
+ <br />
+ <br />
+ <br />
+ <div class="form-group">
+  <label class="col-md-4 text-right">Last Name:</label>
+  <div class="col-md-8">
+   <input type="text" value="{{ user.last_name }}"  class="form-control input-lg" name="last_name"/>
+  </div>
+ </div>
+
+ <br />
+  <br />
+ <br />
+  <div class="form-group">
+  <label class="col-md-4 text-right">Would you want to change password?:</label>
+  <div class="col-md-8">
+   <input type="checkbox" name="is_change_password" >
+  </div>
+ </div>
+ <br />
+ <br />
+ <br />
+
+  <div class="form-group">
+  <label class="col-md-4 text-right">Password:</label>
+  <div class="col-md-8">
+   <input type="password" name="password"  class="form-control input-lg" />
+  </div>
+ </div>
+ <br />
+ <br />
+ <br />
+
+  <div class="form-group">
+  <label class="col-md-4 text-right">Confirm Password:</label>
+  <div class="col-md-8">
+   <input type="password" name="password2"  class="form-control input-lg" />
+  </div>
+ </div>
+ <br />
+  <br />
+ <br />
+  <div class="form-group">
+  <label class="col-md-4 text-right">Is staff:</label>
+  <div class="col-md-8">
+   <input type="checkbox"  {{ user.is_staff|yesno:"checked," }}  value="{{ user.is_staff|yesno:"True,False" }}" name="is_staff" >
+   
+  </div>
+ </div>
+ <br />
+ <br />
+ <br />
+
+ <div class="form-group text-center">
+  <input type="submit" name="add" class="btn btn-primary input-lg" value="Update" />
+ </div>
+
+</form>
+    </div>
+
+  </div>
+</div>
+{% endblock %}
