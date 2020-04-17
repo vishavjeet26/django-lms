@@ -51,7 +51,7 @@ def staff_issue(request):
             detail = Books.objects.filter(request_issue=True)
             return render(request, 'library/staff_issue.html', {'detail': detail})
         return HttpResponse("You don't have specific permsission to access this page.")    
-    return render('/singup_crud/login/')
+    return redirect('/singup_crud/login/')
 
 def staff_addbook(request):
     if request.user.is_authenticated:
