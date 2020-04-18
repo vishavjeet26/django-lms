@@ -40,7 +40,7 @@ Username : studentuser
 <br>
 password:  jeet@123
 
-Normal User
+## Normal User
 Username : normaluser 
 <br>
 password:  jeet@123
