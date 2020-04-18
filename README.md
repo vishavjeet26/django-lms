@@ -22,8 +22,25 @@ README file for Library Management System & CRUD opration for Signup
 #7: Start the development server
 python manage.py runserver
 
+### Login Credentials for different types of users(Admin/Staff/Student/Normal)
 
-### CRUD PAGE for showing without login, it is testing perpose
+Admin User Credentials
+User: vishavjeet
+Password: 12345678
+
+Staff User(Librarian) Credentials
+Username: staffuser
+Password: jeet@123
+
+Student User (EndUser) Credentials
+Username : studentuser
+password:  jeet@123
+
+Normal User
+Username : normaluser
+password:  jeet@123
+
+### Some Screenshot attached for frontend:
 
 <img src="screenshoot/1.png" alt="CRUD">
 <br><br>
@@ -32,3 +49,6 @@ python manage.py runserver
 <img src="screenshoot/3.png" alt="CRUD">
 <br><br>
 <img src="screenshoot/4.png" alt="CRUD">
+
+### If you want to explore and learn coding skills in Python
+URL: http://www.python-ds.com/
