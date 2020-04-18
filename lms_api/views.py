@@ -14,12 +14,13 @@ from django.contrib.auth.models import User
 
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
-from lms_api.permissions import IsOwnerOrReadOnly
+from lms_api.permissions import (IsAdminOrReadOnly, IsStaffOrReadOnly, IsStudentOrReadOnly,
+ IsAdminStaffOrReadOnly, IsAdminStaffStudentOrReadOnly)
 from rest_framework import permissions
 
 @api_view(['GET', 'POST'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminStaffOrReadOnly])
 def author_list(request, format=None):
     """
     List all code authors, or create a new authors.
@@ -38,8 +39,8 @@ def author_list(request, format=None):
         return JsonResponse(serializer.errors, status=400)
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@authentication_classes([SessionAuthentication, BasicAuthentication, IsAdminStaffStudentOrReadOnly])
+@permission_classes([IsAuthenticated, IsAdminStaffOrReadOnly])
 def author_detail(request, pk, format=None):
     """
     Retrieve, update or delete a code authors.
@@ -68,7 +69,7 @@ def author_detail(request, pk, format=None):
 
 @api_view(['GET', 'POST'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminStaffOrReadOnly])
 def publisher_list(request, format=None):
     """
     List all code authors, or create a new authors.
@@ -89,7 +90,7 @@ def publisher_list(request, format=None):
 
 @api_view(['GET', 'PUT', 'DELETE'])
 @authentication_classes([SessionAuthentication, BasicAuthentication])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsAdminOrReadOnly])
 def publisher_detail(request, pk, format=None):
     """
     Retrieve, update or delete a code publishers.
@@ -121,7 +122,7 @@ class IssueList(APIView):
     List all Issue, or create a new snippet.
     """
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated, IsAdminStaffOrReadOnly]
     def get(self, request, format=None):
         book_issues = Issue.objects.all()
         serializer = IssueSerializer(book_issues, many=True)
@@ -138,6 +139,8 @@ class IssueDetail(APIView):
     """
     Retrieve, update or delete a BookIssue instance.
     """
+    authentication_classes = [SessionAuthentication, BasicAuthentication]
+    permission_classes = [IsAuthenticated, IsAdminOrReadOnly]
     def get_object(self, pk):
         try:
             return Issue.objects.get(pk=pk)
@@ -168,7 +171,7 @@ class StudentList(mixins.ListModelMixin,
                   generics.GenericAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdminStaffOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         return self.list(request, *args, **kwargs)
@@ -183,7 +186,7 @@ class StudentDetail(mixins.RetrieveModelMixin,
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                      IsOwnerOrReadOnly]
+                      IsAdminOrReadOnly]
 
     def get(self, request, *args, **kwargs):
         return self.retrieve(request, *args, **kwargs)
@@ -198,36 +201,36 @@ class StudentDetail(mixins.RetrieveModelMixin,
 class LibrarianList(generics.ListCreateAPIView):
     queryset = Librarian.objects.all()
     serializer_class = LibrarianSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdminStaffOrReadOnly]
 
 class LibrarianDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Librarian.objects.all()
     serializer_class = LibrarianSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                      IsOwnerOrReadOnly]
+                      IsAdminStaffOrReadOnly]
 
 class BookList(generics.ListCreateAPIView):
     queryset = Books.objects.all()
     serializer_class = BookSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdminStaffOrReadOnly]
 
 class BookDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Books.objects.all()
     serializer_class = BookSerializer 
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                      IsOwnerOrReadOnly]   
+                      IsAdminOrReadOnly]   
 
 class UserList(generics.ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticatedOrReadOnly]
+    permission_classes = [permissions.IsAuthenticatedOrReadOnly, IsAdminStaffOrReadOnly]
 
 
 class UserDetail(generics.RetrieveAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly,
-                      IsOwnerOrReadOnly]
+                      IsAdminOrReadOnly]
 
 
                      
