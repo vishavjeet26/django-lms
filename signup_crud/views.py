@@ -68,8 +68,15 @@ def login_view(request):
     return render(request, "login.html", context)
 
 def users_view(request):
-	users = User.objects.all()
-	return render(request,"user-list.html",{'users':users})
+	if not is_admin_user(request):
+		users = []
+		msg = """You don't have specific permsission to access this page, 
+		    would you like to Admin Login?
+		    Admin Credentials: username= vishavjeet, Password= 12345678"""
+	else:
+		users = User.objects.all()
+		msg   = ''
+	return render(request,"user-list.html",{'users':users, 'msg':msg})
 
 def destroy(request, id):
 	users = User.objects.get(pk=id)
@@ -119,7 +126,15 @@ def home_view(request):
 
 def logout_view(request):
     logout(request)
-    return redirect("/")	
+    return redirect("/")
+
+def is_admin_user(request):
+	if request.user.is_authenticated:
+		if request.user.groups.filter(name='admin').exists():
+			return True
+		return False
+	return False
+
 
 
 
