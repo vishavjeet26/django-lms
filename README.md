@@ -20,19 +20,20 @@ README file for Library Management System & CRUD opration for Signup
 #6: Setup (if necessary)
 
 #7: Start the development server
-python manage.py runserver
+>python manage.py runserver
 
 ### Login Credentials for different types of users(Admin/Staff/Student/Normal)
 
-Admin User Credentials
+## Admin User Credentials
 User: vishavjeet
 Password: 12345678
 
-Staff User(Librarian) Credentials
+## Staff User(Librarian) Credentials
+
 Username: staffuser
 Password: jeet@123
 
-Student User (EndUser) Credentials
+## Student User (EndUser) Credentials
 Username : studentuser
 password:  jeet@123
 
