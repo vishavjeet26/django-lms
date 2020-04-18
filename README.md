@@ -26,20 +26,25 @@ README file for Library Management System & CRUD opration for Signup
 
 ## Admin User Credentials
 User: vishavjeet
+<br>
 Password: 12345678
 
 ## Staff User(Librarian) Credentials
 
 Username: staffuser
+<br>
 Password: jeet@123
 
 ## Student User (EndUser) Credentials
 Username : studentuser
+<br>
 password:  jeet@123
 
 Normal User
-Username : normaluser
+Username : normaluser 
+<br>
 password:  jeet@123
+
 
 ### Some Screenshot attached for frontend:
 
