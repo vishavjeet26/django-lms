@@ -111,4 +111,12 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.user.username + ' ' + self.book.book_id
+
+class Request(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey('Books', on_delete=models.CASCADE)
+    request_status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.user.username + ' ' + self.book.book_id        
     

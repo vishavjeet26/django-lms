@@ -1,5 +1,5 @@
 from django import forms
-from .models import Student, Issue, Books, Librarian
+from .models import Student, Issue, Books, Librarian, Request
 from django.contrib.auth.models import User
 class UserForm(forms.ModelForm):
     password = forms.CharField(widget=forms.PasswordInput())
@@ -24,3 +24,8 @@ class StaffForm(forms.ModelForm):
     class Meta:
         model = Librarian
         exclude = ['user', 'fullname']
+
+class RequestForm(forms.ModelForm):
+    class Meta:
+        model = Request
+        fields = ('user', 'book')              

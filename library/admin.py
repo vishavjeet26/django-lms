@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here.
 
-from .models import Books, Author, Publisher, Student, Librarian, Issue
+from .models import Books, Author, Publisher, Student, Librarian, Issue, Request
 
 class BookAdmin(admin.ModelAdmin):
     readonly_fields = ('due_date', 'issue_date',)
@@ -13,3 +13,4 @@ admin.site.register(Publisher)
 admin.site.register(Student)
 admin.site.register(Librarian)
 admin.site.register(Issue)
+admin.site.register(Request)

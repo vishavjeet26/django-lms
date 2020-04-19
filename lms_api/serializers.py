@@ -41,7 +41,14 @@ class PublisherSerializer(serializers.ModelSerializer):
 class IssueSerializer(serializers.ModelSerializer):
     class Meta:
         model = Issue
-        fields = ['id', 'user', 'book'] 
+        fields = ['id', 'user', 'book']
+
+class IssueListSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(many=False)
+    book = serializers.StringRelatedField(many=False)
+    class Meta:
+        model = Issue
+        fields = ['id', 'user', 'book']          
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -65,5 +72,14 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id', 'username', 'email','first_name','last_name']
+
+class RequestSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(many=False)
+    book = serializers.StringRelatedField(many=False)
+    class Meta:
+        model = User
+        fields = ['id', 'user', 'book']
+
+
 
 
