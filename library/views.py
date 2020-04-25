@@ -18,6 +18,15 @@ from django.views import View
 from lms_api.permissions import (IsAdminOrReadOnly,IsAdminStaffOrReadOnly, 
     IsAdminStaffStudentOrReadOnly)
 
+import logging
+
+# instance of logging class
+logger = logging.getLogger(__name__)
+# logging format
+format='%(asctime)s : %(levelname)-4s: %(threadName)-4s : %(pathname)-4s : %(lineno)d : %(funcName)-4s: %(message)s'
+# Basic Logging Configuration without settings.py file
+logging.basicConfig(filename = 'logs/student.log', level=logging.DEBUG, format=format)
+
 # Create class/function views here.
 class HomeView(View):
     def get(self, request, *args, **kwargs):
@@ -25,6 +34,7 @@ class HomeView(View):
             try:
                 query = request.GET.get('q')
             except ValueError:
+                #logging.debug('URLString not valid')
                 query = None
             if query:
                 q_type = request.GET.get('type')
@@ -38,10 +48,12 @@ class HomeView(View):
                     detail = Student.objects.filter(fullname__icontains=query) or Student.objects.filter(enrollment_no__icontains=query) \
                     or Librarian.objects.filter(fullname__icontains=query) or Librarian.objects.filter(librarian_id__icontains=query)
                 if not detail:
+                    #logging.debug('No results found!')
                     detail = ['No results found!']
                 return render(request, 'library/index.html', {'detail': detail})
             return render(request, 'library/index.html', {})
         else:
+          #logging.debug('UnAuthenticated user trying to access book')  
           return redirect('/singup_crud/login/')
 
 
@@ -72,27 +84,34 @@ class StudentDashboardView(ListView):
     queryset      = Books.objects.filter(request_issue=True) 
     context_object_name = 'detail'
     paginate_by = 10
-    permission_classes = (IsAdminStaffStudentOrReadOnly, )        
+    permission_classes = (IsAdminStaffStudentOrReadOnly, )
+    logging.info('Student Dashboard')        
 
 class CreateStudentView(View):
     def get(self, request , username, admin):
         if is_admin_user(request):
             form = StudentForm
             return render(request, 'library/createstudent.html', {'form':form})
+        logging.warning('You don`t have specific permsission to access this page.') 
         return HttpResponse("You don't have specific permsission to access this page.")      
 
     def post(self, request, username, admin, *args, **kwargs):
         if is_admin_user(request):
             form = StudentForm(request.POST)
             user_instance = get_object_or_404(User, username=username)
+            if user_instance is None:
+                logging.critical('User instance not found!')  
             if form.is_valid():
                 detail = form.save(commit=False)
                 detail.user = user_instance
                 detail.fullname = detail.first_name + ' ' + detail.last_name
                 detail.save()
                 detail.user.groups.add(Group.objects.get(name='student'))
+                logging.info('User Created, User :'+detail.fullname) 
                 return redirect('create_user')
+            logging.error('Something wrong!')    
             return render(request, 'library/createstudent.html', {'form':form})
+        logging.warning('UnAuthenticated user try to post request')     
         return redirect('/singup_crud/login/')                      
 
 def staff_issue(request):

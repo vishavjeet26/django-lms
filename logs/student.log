@@ -1,0 +1,5 @@
+2020-04-26 03:17:32,292 : WARNING: Thread-17 : C:\ssrtechvision\env\lib\site-packages\django\utils\log.py : 222 : log_response: Not Found: /library/static/css/material-kit.min.css?v=1.1.1.css
+2020-04-26 03:17:32,299 : WARNING: Thread-18 : C:\ssrtechvision\env\lib\site-packages\django\utils\log.py : 222 : log_response: Not Found: /library/static/css/bootstrap.min.css
+2020-04-26 03:17:32,464 : WARNING: Thread-18 : C:\ssrtechvision\env\lib\site-packages\django\utils\log.py : 222 : log_response: Not Found: /library/static/img/login/bg.jpg
+2020-04-26 03:17:53,480 : INFO: Thread-20 : C:\ssrtechvision\LMS\library\views.py : 110 : post: User Created, User :asdasdad asdadasdasd
+2020-04-26 03:18:13,684 : DEBUG: MainThread : c:\users\hp\appdata\local\programs\python\python38-32\lib\asyncio\proactor_events.py : 623 : __init__: Using proactor: IocpProactor
