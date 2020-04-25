@@ -12,38 +12,88 @@ from django.contrib.auth.models import Group
 from django.contrib.auth import logout
 from django.db.models import Q
 
-# Create your views here.
-def home(request):
-    if request.user.is_authenticated:
-        try:
-            query = request.GET.get('q')
-        except ValueError:
-            query = None
-        if query:
-            q_type = request.GET.get('type')
-            if q_type == 'author':
-                detail = Books.objects.filter(author__fullname__icontains=query)
-            if q_type == 'title':
-                detail = Books.objects.filter(title__icontains=query)
-            if q_type == 'isbn':
-                detail = Books.objects.filter(isbn=query)
-            if q_type == 'users':
-                detail = Student.objects.filter(fullname__icontains=query) or Student.objects.filter(enrollment_no__icontains=query) \
-                         or Librarian.objects.filter(fullname__icontains=query) or Librarian.objects.filter(librarian_id__icontains=query)
-            if not detail:
-                detail = ['No results found!']
-            return render(request, 'library/index.html', {'detail': detail})            
-        return render(request, 'library/index.html', {})
-    else:
+from django.views.generic import ListView, CreateView
+from django.views import View
+
+from lms_api.permissions import (IsAdminOrReadOnly,IsAdminStaffOrReadOnly, 
+    IsAdminStaffStudentOrReadOnly)
+
+# Create class/function views here.
+class HomeView(View):
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            try:
+                query = request.GET.get('q')
+            except ValueError:
+                query = None
+            if query:
+                q_type = request.GET.get('type')
+                if q_type == 'author':
+                    detail = Books.objects.filter(author__fullname__icontains=query)
+                if q_type == 'title':
+                    detail = Books.objects.filter(title__icontains=query)
+                if q_type == 'isbn':
+                    detail = Books.objects.filter(isbn=query)
+                if q_type == 'users':
+                    detail = Student.objects.filter(fullname__icontains=query) or Student.objects.filter(enrollment_no__icontains=query) \
+                    or Librarian.objects.filter(fullname__icontains=query) or Librarian.objects.filter(librarian_id__icontains=query)
+                if not detail:
+                    detail = ['No results found!']
+                return render(request, 'library/index.html', {'detail': detail})
+            return render(request, 'library/index.html', {})
+        else:
+          return redirect('/singup_crud/login/')
+
+
+class CreateUserView(View):
+
+    def get(self, request):
+        if is_admin_user(request):
+            form = UserForm
+            return render(request, 'library/adminpage.html', {'form':form})
+        return HttpResponse("You don't have specific permsission to access this page.")      
+
+    def post(self, request, *args, **kwargs):
+
+        if is_admin_user(request):
+            form = UserForm(request.POST)
+            if form.is_valid():
+                detail = form.save(commit=False)
+                detail.save()
+                if request.POST.get('acctype') == 'student':
+                    return redirect('create_student', username=detail.username, admin=request.user.username)
+                else:
+                    return redirect('create_staff', username=detail.username, admin=request.user.username)
+            return render(request, 'library/adminpage.html', {'form':form})
         return redirect('/singup_crud/login/')
 
-def student_dashboard(request):
-    if request.user.is_authenticated:
-        if request.user.groups.filter(Q(name='student') | Q(name='staff') | Q(name='admin')).exists():    
-            detail = Books.objects.filter(request_issue=True)
-            return render(request, 'library/student_dashboard.html', {'detail': detail})
-        return HttpResponse("You don't have specific permsission to access this page.")
-    return redirect('/singup_crud/login/')
+class StudentDashboardView(ListView):
+    template_name = "library/student_dashboard.html"
+    queryset      = Books.objects.filter(request_issue=True) 
+    context_object_name = 'detail'
+    paginate_by = 10
+    permission_classes = (IsAdminStaffStudentOrReadOnly, )        
+
+class CreateStudentView(View):
+    def get(self, request , username, admin):
+        if is_admin_user(request):
+            form = StudentForm
+            return render(request, 'library/createstudent.html', {'form':form})
+        return HttpResponse("You don't have specific permsission to access this page.")      
+
+    def post(self, request, username, admin, *args, **kwargs):
+        if is_admin_user(request):
+            form = StudentForm(request.POST)
+            user_instance = get_object_or_404(User, username=username)
+            if form.is_valid():
+                detail = form.save(commit=False)
+                detail.user = user_instance
+                detail.fullname = detail.first_name + ' ' + detail.last_name
+                detail.save()
+                detail.user.groups.add(Group.objects.get(name='student'))
+                return redirect('create_user')
+            return render(request, 'library/createstudent.html', {'form':form})
+        return redirect('/singup_crud/login/')                      
 
 def staff_issue(request):
     if request.user.is_authenticated:    
@@ -113,44 +163,6 @@ def change_issue_status(request):
     }
     return JsonResponse(data)
 
-def create_user(request):
-    if request.user.is_authenticated:
-        if request.user.groups.filter(name='admin').exists():
-            if request.method == "POST":
-                form = UserForm(request.POST)
-                if form.is_valid():
-                    detail = form.save(commit=False)
-                    detail.save()
-                    if request.POST.get('acctype') == 'student':
-                        return redirect('create_student', username=detail.username, admin=request.user.username)
-                    else:
-                        return redirect('create_staff', username=detail.username, admin=request.user.username)
-            else:	
-                form = UserForm
-            return render(request, 'library/adminpage.html', {'form':form})
-        return HttpResponse("You don't have specific permsission to access this page.")
-    else:
-        return redirect('../login')
-
-def create_student(request, username, admin):
-    if request.user.username == admin:
-        if request.user.groups.filter(name='admin').exists():        
-            user_instance = get_object_or_404(User, username=username)
-            if request.method == "POST":
-                form = StudentForm(request.POST)
-                if form.is_valid():
-                    detail = form.save(commit=False)
-                    detail.user = user_instance
-                    detail.fullname = detail.first_name + ' ' + detail.last_name
-                    detail.save()
-                    detail.user.groups.add(Group.objects.get(name='student'))
-                    return redirect('create_user')
-            else:
-                form = StudentForm
-            return render(request, 'library/createstudent.html', {'form':form})
-        return HttpResponse("You don't have specific permsission to access this page.")
-    else:
-        return redirect('/singup_crud/login/')
 
 def create_staff(request, username, admin):
     if request.user.username == admin:
@@ -173,4 +185,33 @@ def create_staff(request, username, admin):
 
 def logout_view(request):
     logout(request)
-    return redirect("/")        
+    return redirect("/")
+
+def is_admin_user(request):
+    if request.user.is_authenticated:
+        if request.user.groups.filter(name='admin').exists():
+            print("Admin login...")
+            return True
+    return False   
+
+"""
+Custom permission to only allow Staff of an object to create book, see all books,
+assign book and submit ot user.
+"""
+def is_admin_staff_user(request):
+    if request.user.is_authenticated:
+        if request.user.groups.filter(Q(name='admin') | Q(name='staff')).exists():
+            print("Staff login...")
+            return True
+    return False        
+
+"""
+Custom permission to only allow admin, staff and student of an object to see all books,
+check book status, create assign request
+"""
+def is_admin_staff_student_user(request):
+    if request.user.is_authenticated:
+        if request.user.groups.filter(Q(name='admin') | Q(name='staff') | Q(name='student')).exists():
+            print("student login...")
+            return True
+    return False
