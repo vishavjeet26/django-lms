@@ -57,4 +57,4 @@ password:  jeet@123
 <img src="screenshoot/4.png" alt="CRUD">
 
 ### If you want to explore and learn coding skills in Python
-URL: http://www.python-ds.com/
+URL: https://www.python-ds.com/
